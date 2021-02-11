@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 2021_02_06_113728) do
   create_table "items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
     t.boolean "done"
-    t.bigint "todo_id", null: false
+    t.bigint "todo_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["todo_id"], name: "index_items_on_todo_id"
