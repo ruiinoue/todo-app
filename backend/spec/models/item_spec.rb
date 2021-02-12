@@ -14,7 +14,7 @@ RSpec.describe Item, type: :model do
         let(:todo) { Todo.new(todo_params) }
         let(:todo_params) { { title: 'Mozart', created_by: "1" } }
         let(:items) { Item.new(items_params) }
-        let(:items_params) { { name: 'test', done: true, todo: todo } }
+        let(:items_params) { { name: 'test', todo: todo } }
 
         context "無効パターン" do
             it "nameが無効" do
@@ -22,27 +22,27 @@ RSpec.describe Item, type: :model do
                 expect(items).to be_invalid
             end
 
-            it "doneが無効" do
-                items.done = nil
-                expect(items).to be_invalid
-            end
+            # it "doneが無効" do
+            #     items.done = nil
+            #     expect(items).to be_invalid
+            # end
 
             it "todoが無効" do
                 items.todo = nil
                 expect(items).to be_invalid
             end
 
-            it "nameとdoneが無効" do
-                items.name = " "
-                items.done = nil
-                expect(items).to be_invalid
-            end
+            # it "nameとdoneが無効" do
+            #     items.name = " "
+            #     items.done = nil
+            #     expect(items).to be_invalid
+            # end
 
-            it "doneとtodoが無効" do
-                items.done = nil
-                items.todo = nil
-                expect(items).to be_invalid
-            end
+            # it "doneとtodoが無効" do
+            #     items.done = nil
+            #     items.todo = nil
+            #     expect(items).to be_invalid
+            # end
 
             it "nameとtodoが無効" do
                 items.name = " "
@@ -50,16 +50,16 @@ RSpec.describe Item, type: :model do
                 expect(items).to be_invalid
             end
 
-            it "name・done・todoすべて無効" do
-                items.name = " "
-                items.done = nil
-                items.todo = nil
-                expect(items).to be_invalid
-            end
+            # it "name・done・todoすべて無効" do
+            #     items.name = " "
+            #     items.done = nil
+            #     items.todo = nil
+            #     expect(items).to be_invalid
+            # end
         end
 
         context "有効パターン" do
-            it "name・done・todoすべて有効" do
+            it "name・todoすべて有効" do
                 expect(items).to be_valid
             end
         end
@@ -71,9 +71,9 @@ RSpec.describe Item, type: :model do
             should validate_presence_of(:name)
           end
 
-          it "doneが存在する" do
-            should validate_presence_of(:done)
-          end
+        #   it "doneが存在する" do
+        #     should validate_presence_of(:done)
+        #   end
         end
     end
 end
