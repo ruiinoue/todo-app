@@ -23,6 +23,8 @@
         >
           GitHub
         </a>
+        <button @click="getTodos">確認</button>
+        {{ todos }}
       </div>
     </div>
   </div>
@@ -34,6 +36,17 @@ import Logo from '~/components/Logo.vue'
 export default {
   components: {
     Logo
+  },
+  data() {
+    return {
+      todos: [],
+    }
+  },
+  methods: {
+    async getTodos() {
+      const res = await this.$axios.$get('http://localhost:5000/todos')
+      this.todos = res
+    }
   }
 }
 </script>
