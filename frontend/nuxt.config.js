@@ -1,5 +1,26 @@
 
 export default {
+  presets: [
+    "@babel/preset-env",
+    {
+      "modules": false,
+      "useBuiltIns": "usage"
+    }
+  ],
+  env: {
+    test: {
+      presets: [
+        [
+          "@babel/preset-env",
+          {
+            targets: {
+              node: "current"
+            }
+          }
+        ]
+      ]
+    }
+  },
   mode: 'universal',
   server: {
     port: 3000,
