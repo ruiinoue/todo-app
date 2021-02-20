@@ -1,23 +1,29 @@
 <template>
   <div>
     <div>GET /todos</div>
-    <ul v-for="todo in todos" :key="todo.id">
+    <ul v-for="(todo, index) in todos" :key="`todo-${index}`">
       <li>{{ todo }}</li>
     </ul>
     <div>GET /todos/1</div>
     <div>{{ items }}</div>
-    <ul v-for="item in items" :key="item.id">
+    <ul v-for="(item, index) in items" :key="`item-${index}`">
       <li>{{ item }}</li>
     </ul>
     <div>todoの中にitemsを格納</div>
-    <ul v-for="todoItem in todoItems" :key="todoItem.id">
+    <ul v-for="(todoItem, index) in todoItems" :key="`todoItem-${index}`">
       <li>
         <div>{{ todoItem }}</div>
-        <ul v-for="item in todoItem.items" :key="item.id">
+        <ul v-for="(item, index) in todoItem.items" :key="`todoItem-items-${index}`">
           <li>{{ item }}</li>
         </ul>
       </li>
     </ul>
+    <div>todoを追加</div>
+    <form @submit.prevent="submitCreateTodo">
+      <input type="text" v-model="todoForm.title">
+      <input type="text" v-model="todoForm.created_by">
+      <button type="submit">追加</button>
+    </form>
     <!-- <div>{{ todoItems }}</div> -->
     <!-- <button @click="getTodos">確認</button>
     <button @click="postTodos">追加</button>
@@ -34,10 +40,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {},
+  data() {
+    return {
+      todoForm: { title: '', created_by: '' },
+    }
+  },
   async asyncData({ store }) {
     await store.dispatch('fetchTodos')
     await store.dispatch('fetchItems', 1)
@@ -52,80 +63,58 @@ export default {
     console.log(this.todos[0].items)
     console.log(this.items)
   },
-  // methods: {
-  //   async getTodos() {
-  //     const res = await this.$axios.$get('http://localhost:5000/todos')
-  //     this.todos = res
-  //   },
-  //   async postTodos() {
-  //     const res = await this.$axios.$post('http://localhost:5000/todos', { title: "Create", created_by: 1 })
-  //     this.todos.push(res)
-  //   },
-  //   async showTodos() {
-  //     const res = await this.$axios.$get(`http://localhost:5000/todos/1`)
-  //     this.todos = res
-  //   },
-  //   async putTodos() {
-  //     const res = await this.$axios.$put(`http://localhost:5000/todos/1`, { title: "Change" })
-  //     this.todos = res
-  //   },
-  //   async daleteTodos() {
-  //     const res = await this.$axios.$delete(`http://localhost:5000/todos/2`)
-  //     this.todos = res
-  //   },
-  //   async getItems() {
-  //     const res = await this.$axios.$get('http://localhost:5000/todos/1/items')
-  //     this.items = res
-  //   },
-  //   async postItems() {
-  //     const res = await this.$axios.$post('http://localhost:5000/todos/1/items', { name: 'Create', done: false })
-  //     this.items.push(res)
-  //   },
-  //   async showItems() {
-  //     const res = await this.$axios.$get(`http://localhost:5000/todos/1/items/1`)
-  //     this.todos = res
-  //   },
-  //   async putItems() {
-  //     const res = await this.$axios.$put('http://localhost:5000/todos/1/items/1', { name: 'Change', done: true })
-  //     this.items = res
-  //   },
-  //   async deleteItems() {
-  //     const res = await this.$axios.$delete('http://localhost:5000/todos/1/items/2')
-  //     this.items = res
-  //   },
-  // }
+  methods: {
+    async submitCreateTodo() {
+      if(this.todoForm.title && this.todoForm.created_by) {
+        await this.createTodos({ title: this.todoForm.title, created_by: this.todoForm.created_by })
+        this.todoForm.title = ''
+        this.todoForm.created_by = ''
+      }
+    },
+    ...mapActions(['createTodos'])
+    // async getTodos() {
+    //   const res = await this.$axios.$get('http://localhost:5000/todos')
+    //   this.todos = res
+    // },
+    // async postTodos() {
+    //   const res = await this.$axios.$post('http://localhost:5000/todos', { title: "Create", created_by: 1 })
+    //   this.todos.push(res)
+    // },
+    // async showTodos() {
+    //   const res = await this.$axios.$get(`http://localhost:5000/todos/1`)
+    //   this.todos = res
+    // },
+    // async putTodos() {
+    //   const res = await this.$axios.$put(`http://localhost:5000/todos/1`, { title: "Change" })
+    //   this.todos = res
+    // },
+    // async daleteTodos() {
+    //   const res = await this.$axios.$delete(`http://localhost:5000/todos/2`)
+    //   this.todos = res
+    // },
+    // async getItems() {
+    //   const res = await this.$axios.$get('http://localhost:5000/todos/1/items')
+    //   this.items = res
+    // },
+    // async postItems() {
+    //   const res = await this.$axios.$post('http://localhost:5000/todos/1/items', { name: 'Create', done: false })
+    //   this.items.push(res)
+    // },
+    // async showItems() {
+    //   const res = await this.$axios.$get(`http://localhost:5000/todos/1/items/1`)
+    //   this.todos = res
+    // },
+    // async putItems() {
+    //   const res = await this.$axios.$put('http://localhost:5000/todos/1/items/1', { name: 'Change', done: true })
+    //   this.items = res
+    // },
+    // async deleteItems() {
+    //   const res = await this.$axios.$delete('http://localhost:5000/todos/1/items/2')
+    //   this.items = res
+    // },
+  }
 }
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
 </style>

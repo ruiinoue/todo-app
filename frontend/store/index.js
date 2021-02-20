@@ -14,6 +14,9 @@ export const mutations = {
   setTodos(state, todos) {
     state.todos = todos
   },
+  addTodos(state, newTodo) {
+    state.todos.push(newTodo)
+  },
   setItems(state, items) {
     state.items = items
   },
@@ -29,6 +32,10 @@ export const actions = {
   async fetchTodos({ commit }) {
     const todos = await this.$axios.$get('/api/todos')
     commit('setTodos', todos)
+  },
+  async createTodos({ commit }, { title, created_by }) {
+    const newTodo = await this.$axios.$post('/api/todos', { title: title, created_by: created_by })
+    commit('addTodos', newTodo)
   },
   async fetchItems({ commit }, id) {
     const items = await this.$axios.$get(`/api/todos/${id}/items`)

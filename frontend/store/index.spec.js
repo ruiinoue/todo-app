@@ -22,17 +22,18 @@ const testAction = (context = {}, payload = {}) => {
 
 describe('store/index.js', () => {
   let store
-  let todo1, todo2
+  let todo1, todo2, new_todo
   let item1, item2, item3, item4, todo_to_items
   beforeEach(() => {
     store = new Vuex.Store(_.cloneDeep(index))
     todo1 = { id: 1, title: 'title_1', created_by: '1', created_at: "", updated_at: "" }
-    todo2 = { id: 1, title: 'title_2', created_by: '2', created_at: "", updated_at: "" }
+    todo2 = { id: 2, title: 'title_2', created_by: '2', created_at: "", updated_at: "" }
     item1 = { id: 1, name: "item_1", done: true, todo_id: 1, created_at: "", updated_at: "" }
     item2 = { id: 2, name: "item_2", done: true, todo_id: 1, created_at: "", updated_at: "" }
     item3 = { id: 3, name: "item_3", done: true, todo_id: 1, created_at: "", updated_at: "" }
     item4 = { id: 4, name: "item_4", done: true, todo_id: 1, created_at: "", updated_at: "" }
     todo_to_items = { id: 1, title: 'todo_to_items', created_by: '1', created_at: "", updated_at: "" }
+    new_todo = { id: 3, title: 'title_3', created_by: '3', created_at: "", updated_at: "" }
   })
 
   describe('getters', () => {
@@ -59,7 +60,7 @@ describe('store/index.js', () => {
 
     describe('items', () => {
       test('指定のtodoに含まれるすべてのitemsが取得できる', () => {
-        expect(store.getters['todos']).toEqual(expect.arrayContaining(todos))
+        expect(store.getters['items']).toEqual(expect.arrayContaining(items))
       })
     })
 
@@ -70,7 +71,7 @@ describe('store/index.js', () => {
     })
   })
 
-  describe('actions', () => {
+  describe('GETアクションのテスト', () => {
     let commit
     let todos
     let items
@@ -131,6 +132,34 @@ describe('store/index.js', () => {
         ]
         await testAction({ commit }, todo_to_items.id)
         expect(store.getters['todoItems']).toEqual(todoItems)
+        done()
+      })
+    })
+  })
+
+  describe('POSTのテスト', () => {
+    let commit
+    let todos
+    beforeEach(() => {
+      commit = store.commit
+      todos = [todo1, todo2, new_todo]
+      store.replaceState({
+        todos: todos,
+      })
+    })
+
+    describe('createTodos', () => {
+      test('新規todoを作成する', async done => {
+        action = 'createTodos'
+        mockAxiosGetResult = {
+          "id": new_todo.id,
+          "title": new_todo.title,
+          "created_by": new_todo.created_by,
+          "created_at": new_todo.created_at,
+          "updated_at": new_todo.updated_at
+        }
+        await testAction({ commit }, { title: new_todo.title, created_by: new_todo.created_by })
+        expect(store.getters['todos']).toContainEqual(new_todo)
         done()
       })
     })
