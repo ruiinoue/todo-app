@@ -64,7 +64,17 @@ export default {
   */
   modules: [
     '@nuxtjs/axios',
+    '@nuxtjs/proxy',
   ],
+  axios: {},
+  proxy: {
+    '/api': {
+      target: 'http://backend:3000',
+      pathRewrite: {
+        '^/api': '',
+      },
+    },
+  },
   /*
   ** Build configuration
   */
