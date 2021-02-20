@@ -53,9 +53,11 @@ export default {
   async asyncData({ store }) {
     await store.dispatch('fetchTodos')
     await store.dispatch('fetchItems', 1)
+    let todo_ids = []
     for(let i=0;i<store.getters['todos'].length;i++) {
-      await store.dispatch('fetchTodoItems', store.getters['todos'][i].id)
+      todo_ids.push(store.getters['todos'][i].id)
     }
+    await store.dispatch('fetchTodoItems', todo_ids)
   },
   computed: {
     ...mapGetters(['todos','items','todoItems'])
