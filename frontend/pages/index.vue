@@ -13,8 +13,8 @@
     <ul v-for="(todoItem, index) in todoItems" :key="`todoItem-${index}`">
       <li>
         <div>{{ todoItem }}</div>
-        <ul v-for="(item, index) in todoItem.items" :key="`todoItem-items-${index}`">
-          <li>{{ item }}</li>
+        <ul v-for="(itemsInTodo, index) in todoItem.items" :key="`todoItem-items-${index}`">
+          <li>{{ itemsInTodo }}</li>
         </ul>
       </li>
     </ul>
@@ -24,6 +24,7 @@
       <input type="text" v-model="todoForm.created_by">
       <button type="submit">追加</button>
     </form>
+    <nuxt-link to="/todos">todo一覧へ</nuxt-link>
     <!-- <div>{{ todoItems }}</div> -->
     <!-- <button @click="getTodos">確認</button>
     <button @click="postTodos">追加</button>
@@ -52,9 +53,11 @@ export default {
   async asyncData({ store }) {
     await store.dispatch('fetchTodos')
     await store.dispatch('fetchItems', 1)
+    let todo_ids = []
     for(let i=0;i<store.getters['todos'].length;i++) {
-      await store.dispatch('fetchTodoItems', store.getters['todos'][i].id)
+      todo_ids.push(store.getters['todos'][i].id)
     }
+    await store.dispatch('fetchTodoItems', todo_ids)
   },
   computed: {
     ...mapGetters(['todos','items','todoItems'])
