@@ -2,7 +2,7 @@
   <div>
     <div>GET /todos</div>
     <ul v-for="(todo, index) in todos" :key="`todo-${index}`">
-      <li>{{ todo }}</li>
+      <li><nuxt-link :to="{ name: 'todos-todoid', params: { todoid: todo.id } }">{{ todo }}</nuxt-link></li>
     </ul>
     <nuxt-link to="/todos/new">todoを作成</nuxt-link>
     <nuxt-link to="/">トップに戻る</nuxt-link>
