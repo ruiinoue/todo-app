@@ -8,6 +8,7 @@
       <input type="text" v-model="todoForm.created_by">
       <button type="submit">更新</button>
     </form>
+    <button type="button" @click="clickDeleteTodo">削除</button>
   </div>
 </template>
 
@@ -40,7 +41,13 @@ export default {
         this.$router.push(`/todos/${this.todoId}`)
       }
     },
-    ...mapActions(['updateTodo'])
+    async clickDeleteTodo() {
+      if(confirm(`${this.todo.title}を削除しますか？`)) {
+        await this.deleteTodo(this.todoId)
+        this.$router.push('/todos')
+      }
+    },
+    ...mapActions(['updateTodo', 'deleteTodo'])
   },
 }
 </script>

@@ -12,7 +12,8 @@ let mockAxiosGetResult
 jest.mock('axios', () => ({
   $get: jest.fn(() => Promise.resolve(mockAxiosGetResult)),
   $post: jest.fn(() => Promise.resolve(mockAxiosGetResult)),
-  $put: jest.fn(() => Promise.resolve(mockAxiosGetResult))
+  $put: jest.fn(() => Promise.resolve(mockAxiosGetResult)),
+  $delete: jest.fn(() => Promise.resolve(mockAxiosGetResult)),
 }))
 
 let action;
@@ -22,7 +23,7 @@ const testAction = (context = {}, payload = {}) => {
 
 describe('store/index.js', () => {
   let store
-  let todo1, todo2, new_todo, update_todo
+  let todo1, todo2, new_todo, update_todo, delete_todo
   let item1, item2, item3, item4, todo_to_items
   beforeEach(() => {
     store = new Vuex.Store(_.cloneDeep(index))
@@ -35,6 +36,7 @@ describe('store/index.js', () => {
     todo_to_items = { id: 1, title: 'todo_to_items', created_by: '1', created_at: "", updated_at: "" }
     new_todo = { id: 3, title: 'title_3', created_by: '3', created_at: "", updated_at: "" }
     update_todo = { id: 1, title: 'title_1_change', created_by: '1_change', created_at: "", updated_at: "" }
+    delete_todo = { id: 3, title: 'title_delete', created_by: 'delete', created_at: "", updated_at: "" }
   })
 
   describe('getters', () => {
@@ -205,6 +207,36 @@ describe('store/index.js', () => {
         let todo = store.getters['todos'].find(todo => todo.id === update_todo.id)
         expect(todo.title).toEqual(update_todo.title)
         expect(todo.created_by).toEqual(update_todo.created_by)
+        done()
+      })
+    })
+  })
+
+  describe('DELETEのテスト', () => {
+    let commit
+    let todos
+    beforeEach(() => {
+      commit = store.commit
+      todos = [todo1, todo2, delete_todo]
+      let index = todos.indexOf(delete_todo)
+      todos.splice(index, 1)
+      store.replaceState({
+        todos: todos,
+      })
+    })
+
+    describe('deleteTodo', () => {
+      test('todoを削除する', async done => {
+        action = 'deleteTodo'
+        mockAxiosGetResult = {
+          "id": delete_todo.id,
+          "title": delete_todo.title,
+          "created_by": delete_todo.created_by,
+          "created_at": delete_todo.created_at,
+          "updated_at": delete_todo.updated_at
+        }
+        await testAction({ commit }, delete_todo.id)
+        expect(store.getters['todos']).not.toContainEqual(delete_todo)
         done()
       })
     })
