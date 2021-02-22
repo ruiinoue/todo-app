@@ -43,6 +43,13 @@ export const mutations = {
   showItem(state, item) {
     state.item = item
   },
+  updateItem(state, updateItem) {
+    const item = state.items.find(item => item.id === updateItem.id)
+    if (item) {
+      item.name = updateItem.name
+      item.done = updateItem.done
+    }
+  },
   setTodoItems(state, todoItems) {
     state.todoItems = todoItems
   },
@@ -80,6 +87,10 @@ export const actions = {
   async showItem({ commit }, { todoId, itemId }) {
     const item = await this.$axios.$get(`/api/todos/${todoId}/items/${itemId}`)
     commit('showItem', item)
+  },
+  async updateItem({ commit }, { todoId, itemId, name, done }) {
+    const updateItem = await this.$axios.$put(`/api/todos/${todoId}/items/${itemId}`, { name: name, done: done })
+    commit('updateItem', updateItem)
   },
   async fetchTodoItems({ commit }, ids) {
     let todoItems = []

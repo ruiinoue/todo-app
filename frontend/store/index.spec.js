@@ -24,7 +24,7 @@ const testAction = (context = {}, payload = {}) => {
 describe('store/index.js', () => {
   let store
   let todo1, todo2, new_todo, update_todo, delete_todo
-  let item1, item2, item3, item4, todo_to_items, new_item
+  let item1, item2, item3, item4, todo_to_items, new_item, update_item
   beforeEach(() => {
     store = new Vuex.Store(_.cloneDeep(index))
     todo1 = { id: 1, title: 'title_1', created_by: '1', created_at: "", updated_at: "" }
@@ -38,6 +38,7 @@ describe('store/index.js', () => {
     update_todo = { id: 1, title: 'title_1_change', created_by: '1_change', created_at: "", updated_at: "" }
     delete_todo = { id: 3, title: 'title_delete', created_by: 'delete', created_at: "", updated_at: "" }
     new_item = { id: 5, name: "item_5", done: true, todo_id: 1, created_at: "", updated_at: "" }
+    update_item = { id: 1, name: "item_1_change", done: false, todo_id: 1, created_at: "", updated_at: "" }
   })
 
   describe('getters', () => {
@@ -224,13 +225,18 @@ describe('store/index.js', () => {
   describe('PUTのテスト', () => {
     let commit
     let todos
+    let items
     beforeEach(() => {
       commit = store.commit
       todos = [todo1, todo2]
       todos[0].title = update_todo.title
       todos[0].created_by = update_todo.created_by
+      items = [item1, item2, item3, item4]
+      items[0].name = update_item.name
+      items[0].done = update_item.done
       store.replaceState({
         todos: todos,
+        items: items,
       })
     })
 
@@ -248,6 +254,25 @@ describe('store/index.js', () => {
         let todo = store.getters['todos'].find(todo => todo.id === update_todo.id)
         expect(todo.title).toEqual(update_todo.title)
         expect(todo.created_by).toEqual(update_todo.created_by)
+        done()
+      })
+    })
+
+    describe('updateItem', () => {
+      test('itemを更新する', async done => {
+        action = 'updateItem'
+        mockAxiosGetResult = {
+          "id": item1.id,
+          "name": update_item.name,
+          "done": update_item.done,
+          "todo_id": item1.todo_id,
+          "created_at": item1.created_at,
+          "updated_at": item1.updated_at
+        }
+        await testAction({ commit }, { todoId: todo1.id, itemId: item1.id, name: update_item.name, done: update_item.done })
+        let item = store.getters['items'].find(item => item.id === update_item.id)
+        expect(item.name).toEqual(update_item.name)
+        expect(item.done).toEqual(update_item.done)
         done()
       })
     })
