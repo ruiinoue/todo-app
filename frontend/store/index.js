@@ -2,6 +2,7 @@ export const state = () => ({
   todos: [],
   todo: {},
   items: [],
+  item: {},
   todoItems: [],
 })
 
@@ -9,6 +10,7 @@ export const getters = {
   todos: state => state.todos,
   todo: state => state.todo,
   items: state => state.items,
+  item: state => state.item,
   todoItems: state => state.todoItems,
 }
 
@@ -37,6 +39,9 @@ export const mutations = {
   },
   addItems(state, newItem) {
     state.items.push(newItem)
+  },
+  showItem(state, item) {
+    state.item = item
   },
   setTodoItems(state, todoItems) {
     state.todoItems = todoItems
@@ -71,6 +76,10 @@ export const actions = {
   async createItems({ commit }, { todoId, name, done }) {
     const newItem = await this.$axios.$post(`/api/todos/${todoId}/items`, { name: name, done: done })
     commit('addItems', newItem)
+  },
+  async showItem({ commit }, { todoId, itemId }) {
+    const item = await this.$axios.$get(`/api/todos/${todoId}/items/${itemId}`)
+    commit('showItem', item)
   },
   async fetchTodoItems({ commit }, ids) {
     let todoItems = []

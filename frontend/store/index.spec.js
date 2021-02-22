@@ -24,7 +24,7 @@ const testAction = (context = {}, payload = {}) => {
 describe('store/index.js', () => {
   let store
   let todo1, todo2, new_todo, update_todo, delete_todo
-  let item1, item2, item3, item4, todo_to_items
+  let item1, item2, item3, item4, todo_to_items, new_item
   beforeEach(() => {
     store = new Vuex.Store(_.cloneDeep(index))
     todo1 = { id: 1, title: 'title_1', created_by: '1', created_at: "", updated_at: "" }
@@ -37,6 +37,7 @@ describe('store/index.js', () => {
     new_todo = { id: 3, title: 'title_3', created_by: '3', created_at: "", updated_at: "" }
     update_todo = { id: 1, title: 'title_1_change', created_by: '1_change', created_at: "", updated_at: "" }
     delete_todo = { id: 3, title: 'title_delete', created_by: 'delete', created_at: "", updated_at: "" }
+    new_item = { id: 5, name: "item_5", done: true, todo_id: 1, created_at: "", updated_at: "" }
   })
 
   describe('getters', () => {
@@ -80,12 +81,14 @@ describe('store/index.js', () => {
     let todo
     let todoIds
     let items
+    let item
     let todoItems
     beforeEach(() => {
       commit = store.commit
       todos = [todo1, todo2]
       todo = todo1
       items = [item1, item2, item3, item4]
+      item = item1
       todo_to_items.items = items
       todoIds = [todo_to_items.id]
       todoItems = [todo_to_items]
@@ -93,6 +96,7 @@ describe('store/index.js', () => {
         todos: todos,
         todo: todo,
         items: items,
+        item: item,
         todoItems: todoItems,
       })
     })
@@ -141,6 +145,23 @@ describe('store/index.js', () => {
       })
     })
 
+    describe('showItem', () => {
+      test('itemをひとつ取得する', async done => {
+        action = 'showItem'
+        mockAxiosGetResult = {
+          "id": item1.id,
+          "name": item1.name,
+          "done": item1.done,
+          "todo_id": item1.todo_id,
+          "created_at": item1.created_at,
+          "updated_at": item1.updated_at
+        }
+        await testAction({ commit }, { todoId: todo1.id, itemId: item1.id })
+        expect(store.getters['item']).toEqual(item)
+        done()
+      })
+    })
+
     describe('fetchTodoItems', () => {
       test('todoItemsを取得する', async done => {
         action = 'fetchTodoItems'
@@ -155,11 +176,14 @@ describe('store/index.js', () => {
   describe('POSTのテスト', () => {
     let commit
     let todos
+    let items
     beforeEach(() => {
       commit = store.commit
       todos = [todo1, todo2, new_todo]
+      items = [item1, item2, item3, item4, new_item]
       store.replaceState({
         todos: todos,
+        items: items,
       })
     })
 
@@ -175,6 +199,23 @@ describe('store/index.js', () => {
         }
         await testAction({ commit }, { title: new_todo.title, created_by: new_todo.created_by })
         expect(store.getters['todos']).toContainEqual(new_todo)
+        done()
+      })
+    })
+
+    describe('createItems', () => {
+      test('新規itemを作成する', async done => {
+        action = 'createItems'
+        mockAxiosGetResult = {
+          "id": new_item.id,
+          "name": new_item.name,
+          "done": new_item.done,
+          "todo_id": new_item.todo_id,
+          "created_at": new_item.created_at,
+          "updated_at": new_item.updated_at
+        }
+        await testAction({ commit }, { todoId: todo1.id, name: new_item.name, done: new_item.done })
+        expect(store.getters['items']).toContainEqual(new_item)
         done()
       })
     })
