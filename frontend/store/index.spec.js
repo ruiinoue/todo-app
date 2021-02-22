@@ -24,7 +24,7 @@ const testAction = (context = {}, payload = {}) => {
 describe('store/index.js', () => {
   let store
   let todo1, todo2, new_todo, update_todo, delete_todo
-  let item1, item2, item3, item4, todo_to_items, new_item, update_item
+  let item1, item2, item3, item4, todo_to_items, new_item, update_item, delete_item
   beforeEach(() => {
     store = new Vuex.Store(_.cloneDeep(index))
     todo1 = { id: 1, title: 'title_1', created_by: '1', created_at: "", updated_at: "" }
@@ -39,6 +39,7 @@ describe('store/index.js', () => {
     delete_todo = { id: 3, title: 'title_delete', created_by: 'delete', created_at: "", updated_at: "" }
     new_item = { id: 5, name: "item_5", done: true, todo_id: 1, created_at: "", updated_at: "" }
     update_item = { id: 1, name: "item_1_change", done: false, todo_id: 1, created_at: "", updated_at: "" }
+    delete_item = { id: 5, name: "item_5_delete", done: true, todo_id: 1, created_at: "", updated_at: "" }
   })
 
   describe('getters', () => {
@@ -281,13 +282,18 @@ describe('store/index.js', () => {
   describe('DELETEのテスト', () => {
     let commit
     let todos
+    let items
     beforeEach(() => {
       commit = store.commit
       todos = [todo1, todo2, delete_todo]
-      let index = todos.indexOf(delete_todo)
-      todos.splice(index, 1)
+      let todo_index = todos.indexOf(delete_todo)
+      todos.splice(todo_index, 1)
+      items = [item1, item2, item3, item4, delete_item]
+      let item_index = items.indexOf(delete_item)
+      todos.splice(item_index, 1)
       store.replaceState({
         todos: todos,
+        items: items,
       })
     })
 
@@ -303,6 +309,23 @@ describe('store/index.js', () => {
         }
         await testAction({ commit }, delete_todo.id)
         expect(store.getters['todos']).not.toContainEqual(delete_todo)
+        done()
+      })
+    })
+
+    describe('deleteItem', () => {
+      test('itemを削除する', async done => {
+        action = 'deleteItem'
+        mockAxiosGetResult = {
+          "id": delete_item.id,
+          "name": delete_item.name,
+          "done": delete_item.done,
+          "todo_id": delete_item.todo_id,
+          "created_at": delete_item.created_at,
+          "updated_at": delete_item.updated_at
+        }
+        await testAction({ commit }, { todoId: todo1.id, itemId: delete_item.id })
+        expect(store.getters['items']).not.toContainEqual(delete_item)
         done()
       })
     })

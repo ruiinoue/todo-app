@@ -14,6 +14,7 @@
       <div v-if="!itemForm.done">未完了</div>
       <button type="submit">更新</button>
     </form>
+    <button type="button" @click="clickDeleteItem">削除</button>
     <nuxt-link :to="{ name: 'todos-todoId-items-itemid', params: { todoId: todoId, itemid: itemId } }">itemの詳細に戻る</nuxt-link>
   </div>
 </template>
@@ -52,7 +53,13 @@ export default {
         this.$router.push(`/todos/${this.todoId}/items/${this.itemId}`)
       }
     },
-    ...mapActions(['updateItem'])
+    async clickDeleteItem() {
+      if(confirm(`${this.item.name}を削除しますか？`)) {
+        await this.deleteItem({ todoId: this.todoId, itemId: this.itemId })
+        this.$router.push(`/todos/${this.todoId}/items`)
+      }
+    },
+    ...mapActions(['updateItem', 'deleteItem'])
   },
 }
 </script>
