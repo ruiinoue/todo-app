@@ -7,6 +7,7 @@
       <li>{{ item }}</li>
     </ul>
     <nuxt-link :to="{ name: 'todos-todoid', params: { todoid: todoId } }">todoへ戻る</nuxt-link>
+    <nuxt-link :to="{ name: 'todos-todoId-items-new', params: { todoid: todoId } }">itemを作成</nuxt-link>
   </div>
 </template>
 
