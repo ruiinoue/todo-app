@@ -9,6 +9,8 @@
       <li>{{ item }}</li>
     </ul>
     <nuxt-link :to="{ name: 'todos-todoId-edit', params: { todoId: todoId } }">todoを編集</nuxt-link>
+    <nuxt-link :to="{ name: 'todos-todoId-items', params: { todoId: todoId } }">items一覧へ</nuxt-link>
+    <nuxt-link to="/todos">todos一覧へ</nuxt-link>
     <nuxt-link to="/">トップに戻る</nuxt-link>
   </div>
 </template>

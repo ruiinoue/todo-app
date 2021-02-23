@@ -2,6 +2,7 @@ export const state = () => ({
   todos: [],
   todo: {},
   items: [],
+  item: {},
   todoItems: [],
 })
 
@@ -9,6 +10,7 @@ export const getters = {
   todos: state => state.todos,
   todo: state => state.todo,
   items: state => state.items,
+  item: state => state.item,
   todoItems: state => state.todoItems,
 }
 
@@ -34,6 +36,22 @@ export const mutations = {
   },
   setItems(state, items) {
     state.items = items
+  },
+  addItems(state, newItem) {
+    state.items.push(newItem)
+  },
+  showItem(state, item) {
+    state.item = item
+  },
+  updateItem(state, updateItem) {
+    const item = state.items.find(item => item.id === updateItem.id)
+    if (item) {
+      item.name = updateItem.name
+      item.done = updateItem.done
+    }
+  },
+  deleteItem(state, deleteItemResponse) {
+    state.items = deleteItemResponse
   },
   setTodoItems(state, todoItems) {
     state.todoItems = todoItems
@@ -61,9 +79,25 @@ export const actions = {
     const deleteTodoResponse = await this.$axios.$delete(`/api/todos/${todoId}`)
     commit('deleteTodo', deleteTodoResponse)
   },
-  async fetchItems({ commit }, id) {
-    const items = await this.$axios.$get(`/api/todos/${id}/items`)
+  async fetchItems({ commit }, todoId) {
+    const items = await this.$axios.$get(`/api/todos/${todoId}/items`)
     commit('setItems', items)
+  },
+  async createItems({ commit }, { todoId, name, done }) {
+    const newItem = await this.$axios.$post(`/api/todos/${todoId}/items`, { name: name, done: done })
+    commit('addItems', newItem)
+  },
+  async showItem({ commit }, { todoId, itemId }) {
+    const item = await this.$axios.$get(`/api/todos/${todoId}/items/${itemId}`)
+    commit('showItem', item)
+  },
+  async updateItem({ commit }, { todoId, itemId, name, done }) {
+    const updateItem = await this.$axios.$put(`/api/todos/${todoId}/items/${itemId}`, { name: name, done: done })
+    commit('updateItem', updateItem)
+  },
+  async deleteItem({ commit }, { todoId, itemId }) {
+    const deleteItemResponse = this.$axios.$delete(`/api/todos/${todoId}/items/${itemId}`)
+    commit('deleteItem', deleteItemResponse)
   },
   async fetchTodoItems({ commit }, ids) {
     let todoItems = []
