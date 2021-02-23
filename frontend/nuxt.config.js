@@ -65,6 +65,7 @@ export default {
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/proxy',
+    '@nuxtjs/vuetify',
   ],
   axios: {},
   proxy: {
