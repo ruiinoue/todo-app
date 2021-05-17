@@ -1,5 +1,26 @@
 
 export default {
+  presets: [
+    "@babel/preset-env",
+    {
+      "modules": false,
+      "useBuiltIns": "usage"
+    }
+  ],
+  env: {
+    test: {
+      presets: [
+        [
+          "@babel/preset-env",
+          {
+            targets: {
+              node: "current"
+            }
+          }
+        ]
+      ]
+    }
+  },
   mode: 'universal',
   server: {
     port: 3000,
@@ -42,7 +63,18 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy',
   ],
+  axios: {},
+  proxy: {
+    '/api': {
+      target: 'http://backend:3000',
+      pathRewrite: {
+        '^/api': '',
+      },
+    },
+  },
   /*
   ** Build configuration
   */
